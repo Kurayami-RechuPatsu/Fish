@@ -3,624 +3,378 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stardew Fishing Minigame</title>
+    <title>Stardew Fishing Loop</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
         body {
             height: 100vh;
-            background: linear-gradient(to bottom, #2F1B14 0%, #1a0f0a 100%);
+            background: #2F1B14; 
             margin: 0;
             overflow: hidden;
+            font-family: 'Press Start 2P', cursive;
+            user-select: none;
+        }
+
+        /* --- THE MAIN VISUAL SCENE --- */
+        .game-scene {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .background-image-placeholder {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://i.pinimg.com/originals/26/22/0c/26220c15623091df8542031a0e1b203a.gif');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.8;
+            z-index: -2;
+        }
+
+        .cat-avatar {
+            font-size: 100px;
+            color: #fff;
+            text-shadow: 4px 4px #000;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        /* --- UI ELEMENTS --- */
+        .action-btn {
+            pointer-events: all;
+            background: #e36414;
+            border: 4px solid #fff;
+            color: #fff;
+            padding: 15px 30px;
+            font-family: inherit;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #9e400b;
+            transition: transform 0.1s;
+            text-transform: uppercase;
+        }
+
+        .action-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #9e400b;
+        }
+
+        .action-btn:disabled {
+            background: #666;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .notification-exclamation {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 60px;
+            color: yellow;
+            text-shadow: 4px 4px red;
+            display: none;
+            animation: bounce 0.5s infinite alternate;
+            cursor: pointer;
+            pointer-events: all;
+            z-index: 100;
+        }
+
+        @keyframes bounce {
+            from { transform: translateX(-50%) translateY(0); }
+            to { transform: translateX(-50%) translateY(-20px); }
+        }
+
+        /* --- THE FISHING MINIGAME (SIDE BAR) --- */
+        .fishing-container-wrapper {
+            position: absolute;
+            left: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            display: none; 
         }
 
         .fishing {
-            position: absolute;
+            position: relative;
             width: 121px;
             height: 500px;
             border-radius: 10px;
-            top: 50%;
-            left: 50%;
-            margin-top: -250px;
-            margin-left: -60px;
         }
 
-        .fishing .rod {
-            width: 20px;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        .fishing .rod:before {
-            content: "";
-            width: 3px;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: rgb(173, 181, 189);
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(173, 181, 189, 1) 25px,
-                rgba(108, 117, 125, 1) 50px,
-                rgba(173, 181, 189, 1) 75px
-            );
-            border: 1px solid #212529;
-            border-radius: 5px;
-        }
-
-        .fishing .rod:after {
-            content: "";
-            position: absolute;
-            width: 8px;
-            height: 50px;
-            background: rgb(205, 152, 121);
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(247, 127, 0, 1) 0px,
-                rgba(247, 127, 0, 1) 2px,
-                rgba(158, 92, 66, 1) 4px,
-                rgba(247, 127, 0, 1) 6px,
-                rgba(247, 127, 0, 1) 9px
-            );
-            border: 2px solid #9e5c42;
-            bottom: -3px;
-            right: -3px;
-            border-radius: 5px;
-            box-shadow: -3px 4px 14px -4px, inset 2px -2px rgba(0, 0, 0, 0.2);
-        }
-
-        .fishing .rod .reel {
-            position: absolute;
-            width: 25px;
-            height: 25px;
-            border-radius: 100%;
-            background: rgb(171, 77, 11);
-            background: linear-gradient(
-                28deg,
-                rgba(171, 77, 11, 1) 0%,
-                rgba(255, 157, 88, 1) 100%
-            );
-            bottom: 30px;
-            z-index: 2;
-            box-shadow: -3px 4px 14px -4px, inset 2px -2px rgba(0, 0, 0, 0.2);
-            border: 1px solid #67300a;
-        }
-
-        .fishing .rod .reel .handle {
-            content: "";
-            position: absolute;
-            width: 3px;
-            height: 20px;
-            border: 1px solid black;
-            top: -9px;
-            right: 9px;
-            background: rgb(173, 181, 189);
-            background: linear-gradient(
-                0deg,
-                rgba(173, 181, 189, 1) 0%,
-                rgba(108, 117, 125, 1) 81%,
-                rgba(164, 22, 26, 1) 86%,
-                rgba(164, 22, 26, 1) 100%
-            );
-            border-radius: 3px;
-            transform-origin: bottom;
-            animation-name: reelin;
-            animation-duration: 0.5s;
-            animation-iteration-count: infinite;
-            animation-timing-function: linear;
-            animation-play-state: paused;
-        }
-
-        @keyframes reelin {
-            from { transform: rotate(360deg); }
-            to { transform: rotate(0deg); }
-        }
-
+        /* Internal elements for the fishing bar */
+        .fishing .rod { width: 20px; height: 100%; position: absolute; top: 0; left: 0; }
+        .fishing .rod:before { content: ""; width: 3px; height: 100%; position: absolute; top: 0; right: 0; background: repeating-linear-gradient(0deg, rgba(173, 181, 189, 1) 25px, rgba(108, 117, 125, 1) 50px, rgba(173, 181, 189, 1) 75px); border: 1px solid #212529; border-radius: 5px; }
+        .fishing .rod:after { content: ""; position: absolute; width: 8px; height: 50px; background: repeating-linear-gradient(0deg, rgba(247, 127, 0, 1) 0px, rgba(247, 127, 0, 1) 2px, rgba(158, 92, 66, 1) 4px, rgba(247, 127, 0, 1) 6px, rgba(247, 127, 0, 1) 9px); border: 2px solid #9e5c42; bottom: -3px; right: -3px; border-radius: 5px; box-shadow: -3px 4px 14px -4px, inset 2px -2px rgba(0, 0, 0, 0.2); }
+        .fishing .rod .reel { position: absolute; width: 25px; height: 25px; border-radius: 100%; background: linear-gradient(28deg, rgba(171, 77, 11, 1) 0%, rgba(255, 157, 88, 1) 100%); bottom: 30px; z-index: 2; box-shadow: -3px 4px 14px -4px, inset 2px -2px rgba(0, 0, 0, 0.2); border: 1px solid #67300a; }
+        .fishing .rod .reel .handle { content: ""; position: absolute; width: 3px; height: 20px; border: 1px solid black; top: -9px; right: 9px; background: linear-gradient(0deg, rgba(173, 181, 189, 1) 0%, rgba(108, 117, 125, 1) 81%, rgba(164, 22, 26, 1) 86%, rgba(164, 22, 26, 1) 100%); border-radius: 3px; transform-origin: bottom; animation-name: reelin; animation-duration: 0.5s; animation-iteration-count: infinite; animation-timing-function: linear; animation-play-state: paused; }
+        @keyframes reelin { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
         .fishing .rod .reel .handle.reelin { animation-play-state: running; }
-        .fishing .rod .reel .handle.reelout {
-            animation-duration: 0.5s;
-            animation-direction: reverse;
-            animation-play-state: running;
-        }
-
-        .fishing .sea {
-            position: absolute;
-            width: 60px;
-            height: 100%;
-            background: rgb(247, 127, 0);
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(247, 127, 0, 1) 0px,
-                rgba(247, 127, 0, 1) 50px,
-                rgba(255, 166, 73, 1) 52px,
-                rgba(119, 73, 54, 1) 56px,
-                rgba(119, 73, 54, 1) 57px,
-                rgba(247, 127, 0, 1) 61px,
-                rgba(247, 127, 0, 1) 100px
-            );
-            left: 30px;
-            border-radius: 10px;
-            border: 2px solid #774936;
-            box-shadow: inset -2px -2px rgba(0, 0, 0, 0.3);
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        .fishing .sea:before {
-            content: "";
-            position: absolute;
-            width: 15px;
-            height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(255, 255, 255, 0) 0px,
-                rgba(255, 255, 255, 0) 5px,
-                rgba(86, 85, 84, 1) 6px,
-                rgba(19, 21, 21, 1) 9px,
-                rgba(86, 85, 84, 1) 9px,
-                rgba(255, 255, 255, 0) 11px,
-                rgba(255, 255, 255, 0) 34px
-            );
-            top: 0;
-            left: -12px;
-            z-index: -1;
-        }
-
-        .fishing .sea .area {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            border-radius: 10px;
-            background: rgb(142, 202, 230);
-            background: linear-gradient(
-                180deg,
-                rgba(142, 202, 230, 1) 0%,
-                rgba(33, 158, 188, 1) 100%
-            );
-            box-shadow: inset -3px 3px rgba(0, 0, 0, 0.3);
-            border: 2px solid #774936;
-            box-sizing: border-box;
-        }
-
-        .fishing .sea .fish {
-            width: 100%;
-            height: 50px;
-            position: absolute;
-            top: 0;
-            right: 0;
-            z-index: 4;
-            font-size: 25px;
-            line-height: 50px;
-            text-align: center;
-            color: #264653;
-            text-shadow: 1px 1px #2a9d8f;
-        }
-
-        .fishing .sea .bait {
-            position: absolute;
-            width: 100%;
-            height: 100px;
-            top: 0%;
-            left: 0;
-            background: #beee62;
-            border-radius: 10px;
-            box-shadow: inset 0 0 1px 3px #70ae6e;
-        }
-
-        .fishing .progress {
-            position: absolute;
-            width: 30px;
-            height: 100%;
-            border: 2px solid #9e5c42;
-            background: #e36414;
-            right: 0;
-            top: 0;
-            border-radius: 10px;
-            padding: 3px;
-            box-sizing: border-box;
-        }
-
-        .fishing .progress .area {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            background: rgb(115, 57, 56);
-            background: linear-gradient(
-                90deg,
-                rgba(115, 57, 56, 1) 0%,
-                rgba(158, 92, 66, 1) 2%,
-                rgba(111, 59, 46, 1) 36%,
-                rgba(115, 57, 56, 1) 96%,
-                rgba(74, 34, 33, 1) 100%
-            );
-            border-radius: 10px;
-            box-shadow: inset 3px 3px rgba(0, 0, 0, 0.4);
-            overflow: hidden;
-        }
-
-        .fishing .progress .bar {
-            position: absolute;
-            width: 100%;
-            height: 0%;
-            background: #beee62;
-            bottom: 0;
-            box-shadow: inset 2px -2px rgba(0, 0, 0, 0.4);
-            border-radius: 0 0 10px 10px;
-        }
-
-        .holdButtonProgress {
-            display: none;
-        }
-
-        .cloud {
-            position: absolute;
-            background: rgba(100, 100, 100, 0.5);
-            border-radius: 50%;
-            z-index: -1;
-        }
-
-        .cloud1 {
-            width: 100px;
-            height: 50px;
-            top: 20%;
-            left: 10%;
-            border-radius: 50px 50px 0 0;
-        }
-
-        .cloud2 {
-            width: 80px;
-            height: 40px;
-            top: 15%;
-            right: 15%;
-            border-radius: 40px 40px 0 0;
-        }
-
-        .moon {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            background: #FFFF99;
-            border-radius: 50%;
-            top: 10%;
-            right: 20%;
-            box-shadow: 0 0 20px #FFFF99;
-            z-index: -1;
-        }
-
-        .star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: white;
-            border-radius: 50%;
-            box-shadow: 0 0 5px white;
-            z-index: -1;
-        }
-
-        .star1 { top: 15%; left: 20%; }
-        .star2 { top: 25%; left: 40%; }
-        .star3 { top: 10%; left: 60%; }
-        .star4 { top: 20%; left: 80%; }
-        .star5 { top: 30%; left: 50%; }
-
-        .stall-wall {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 100px;
-            background: linear-gradient(to right, #8B4513, #A0522D);
-            z-index: -1;
-        }
-
-        .stall-wall.left {
-            left: 0;
-            border-right: 5px solid #654321;
-        }
-
-        .stall-wall.right {
-            right: 0;
-            border-left: 5px solid #654321;
-        }
-
-        .lantern {
-            position: absolute;
-            width: 20px;
-            height: 30px;
-            background: #FFD700;
-            border-radius: 10px 10px 5px 5px;
-            box-shadow: 0 0 15px #FFD700;
-            z-index: -1;
-        }
-
-        .stall-lantern1 {
-            top: 20%;
-            left: 5%;
-        }
-
-        .stall-lantern2 {
-            top: 20%;
-            right: 5%;
-        }
+        .fishing .rod .reel .handle.reelout { animation-duration: 0.5s; animation-direction: reverse; animation-play-state: running; }
+        .fishing .sea { position: absolute; width: 60px; height: 100%; background: repeating-linear-gradient(0deg, rgba(247, 127, 0, 1) 0px, rgba(247, 127, 0, 1) 50px, rgba(255, 166, 73, 1) 52px, rgba(119, 73, 54, 1) 56px, rgba(119, 73, 54, 1) 57px, rgba(247, 127, 0, 1) 61px, rgba(247, 127, 0, 1) 100px); left: 30px; border-radius: 10px; border: 2px solid #774936; box-shadow: inset -2px -2px rgba(0, 0, 0, 0.3); padding: 10px; box-sizing: border-box; }
+        .fishing .sea:before { content: ""; position: absolute; width: 15px; height: 100%; background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0) 5px, rgba(86, 85, 84, 1) 6px, rgba(19, 21, 21, 1) 9px, rgba(86, 85, 84, 1) 9px, rgba(255, 255, 255, 0) 11px, rgba(255, 255, 255, 0) 34px); top: 0; left: -12px; z-index: -1; }
+        .fishing .sea .area { position: relative; width: 100%; height: 100%; border-radius: 10px; background: linear-gradient(180deg, rgba(142, 202, 230, 1) 0%, rgba(33, 158, 188, 1) 100%); box-shadow: inset -3px 3px rgba(0, 0, 0, 0.3); border: 2px solid #774936; box-sizing: border-box; overflow: hidden;}
+        .fishing .sea .fish { width: 100%; height: 50px; position: absolute; top: 0; right: 0; z-index: 4; font-size: 25px; line-height: 50px; text-align: center; color: #264653; text-shadow: 1px 1px #2a9d8f; }
+        .fishing .sea .bait { position: absolute; width: 100%; height: 100px; top: 0%; left: 0; background: #beee62; border-radius: 10px; box-shadow: inset 0 0 1px 3px #70ae6e; }
+        .fishing .progress { position: absolute; width: 30px; height: 100%; border: 2px solid #9e5c42; background: #e36414; right: 0; top: 0; border-radius: 10px; padding: 3px; box-sizing: border-box; }
+        .fishing .progress .area { position: relative; width: 100%; height: 100%; background: linear-gradient(90deg, rgba(115, 57, 56, 1) 0%, rgba(158, 92, 66, 1) 2%, rgba(111, 59, 46, 1) 36%, rgba(115, 57, 56, 1) 96%, rgba(74, 34, 33, 1) 100%); border-radius: 10px; box-shadow: inset 3px 3px rgba(0, 0, 0, 0.4); overflow: hidden; }
+        .fishing .progress .bar { position: absolute; width: 100%; height: 0%; background: #beee62; bottom: 0; box-shadow: inset 2px -2px rgba(0, 0, 0, 0.4); border-radius: 0 0 10px 10px; }
     </style>
 </head>
 <body>
 
-<div class="fishing" data-reelpower="10" data-baitweight="1" data-progress="4" data-progresspenalty="3" data-progressupdaterate="100">
-  <div class="rod">
-    <div class="reel">
-      <div class="handle"></div>
-    </div>
-  </div>
-  <div class="sea">
-    <div class="area">
-      <div class="bait" id="bait"></div>
-      <div class="fish" data-movepremsec="1500" data-jumprange="100" data-speed="1000" data-depth="20">
-          <i class="fas fa-fish"></i>
-      </div>
-    </div>
-  </div>
-  <div class="progress">
-    <div class="area">
-      <div class="bar" style="height:0%"></div>
-    </div>
-  </div>
-</div>
-<div class="cloud cloud1"></div>
-<div class="cloud cloud2"></div>
+    <div class="background-image-placeholder"></div>
 
-<div class="moon"></div>
-<div class="star star1"></div>
-<div class="star star2"></div>
-<div class="star star3"></div>
-<div class="star star4"></div>
-<div class="star star5"></div>
+    <div class="game-scene">
+        <div class="cat-avatar">
+            <i class="fas fa-cat"></i>
+            <div class="notification-exclamation" id="exclamation">!</div>
+        </div>
+        
+        <div class="controls">
+            <button id="castBtn" class="action-btn">Cast Line</button>
+            <div id="statusText" style="margin-top:15px; color:white; text-shadow: 2px 2px black; font-size: 14px;"></div>
+        </div>
+    </div>
 
-<div class="stall-wall left"></div>
-<div class="stall-wall right"></div>
-<div class="lantern stall-lantern1"></div>
-<div class="lantern stall-lantern2"></div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <div class="fishing-container-wrapper" id="minigameLayer">
+        <div class="fishing">
+            <div class="rod">
+                <div class="reel">
+                    <div class="handle"></div>
+                </div>
+            </div>
+            <div class="sea">
+                <div class="area">
+                    <div class="bait" id="bait"></div>
+                    <div class="fish">
+                        <i class="fas fa-fish"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="progress">
+                <div class="area">
+                    <div class="bar" style="height:0%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<script>
-/* jQuery Press and Hold Plugin */
-(function (e, t, n, r) {
-    function o(t, n) {
-        this.element = t;
-        this.settings = e.extend({}, s, n);
-        this._defaults = s;
-        this._name = i;
-        this.init();
-    }
-    var i = "pressAndHold",
-        s = {
-            holdTime: 700,
-            progressIndicatorRemoveDelay: 300,
-            progressIndicatorColor: "#ff0000",
-            progressIndicatorOpacity: 0.6
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script>
+    /* --- GAME LOGIC --- */
+    (function ($) {
+        // --- CONFIGURATION ---
+        const config = {
+            reelAccel: 0.05,    // Acceleration when reeling up
+            gravityAccel: 0.03, // Acceleration when falling
+            maxReelSpeed: 0.6,  // Max speed reeling up
+            maxFallSpeed: 0.6,  // Max speed falling
+            progressWin: 0.2,   // How fast bar fills
+            progressLose: 0.05, // How fast bar drains
+            fishSpeed: 0.3,     // Base fish speed multiplier
+            fishChangeRate: 50  // How erratic the fish is
         };
-    o.prototype = {
-        init: function () {
-            var t = this, n, r, i;
-            e(this.element).css({
-                display: "block",
-                overflow: "hidden",
-                position: "relative"
-            });
-            i = '<div class="holdButtonProgress" style="height: 100%; width: 100%; position: absolute; top: 0; left: -100%; background-color:' +
-                this.settings.progressIndicatorColor + "; opacity:" + this.settings.progressIndicatorOpacity + ';"></div>';
-            e(this.element).prepend(i);
-            e(this.element).mousedown(function (i) {
-                if (i.button != 2) {
-                    e(t.element).trigger("start.pressAndHold");
-                    r = 0;
-                    n = setInterval(function () {
-                        r += 10;
-                        e(t.element).find(".holdButtonProgress").css("left", (r / t.settings.holdTime) * 100 - 100 + "%");
-                        if (r == t.settings.holdTime) {
-                            t.exitTimer(n);
-                            e(t.element).trigger("complete.pressAndHold");
-                        }
-                    }, 10);
-                    e(t.element).on("mouseup.pressAndHold mouseleave.pressAndHold", function (e) {
-                        t.exitTimer(n);
-                    });
+
+        // --- STATE VARIABLES ---
+        var isGameActive = false;
+        var isReelingPhase = false;
+        var isMouseHeld = false;
+        
+        // Physics variables (using 0-100 scale for %)
+        var baitPos = 85; 
+        var baitVelocity = 0;
+        var fishPos = 85;
+        var fishTarget = 85;
+        var progress = 0;
+        var gameLoopReq; // Request Animation Frame ID
+
+        // --- PHASE 1: INITIALIZATION ---
+        $(document).ready(function() {
+            // Setup Listeners
+            $("#castBtn").click(startCast);
+            $("#exclamation").click(startMinigame);
+            
+            // Mouse/Touch controls for the minigame
+            $(document).on('mousedown touchstart', function(e) {
+                if(isReelingPhase) {
+                    isMouseHeld = true;
+                    $(".fishing .rod .reel .handle").addClass("reelin").removeClass("reelout");
                 }
             });
-        },
-        exitTimer: function (t) {
-            var n = this;
-            clearTimeout(t);
-            e(this.element).off("mouseup.pressAndHold mouseleave.pressAndHold");
-            setTimeout(function () {
-                e(".holdButtonProgress").css("left", "-100%");
-                e(n.element).trigger("end.pressAndHold");
-            }, this.settings.progressIndicatorRemoveDelay);
-        }
-    };
-    e.fn[i] = function (t) {
-        return this.each(function () {
-            if (!e.data(this, "plugin_" + i)) {
-                e.data(this, "plugin_" + i, new o(this, t));
+
+            $(document).on('mouseup touchend', function(e) {
+                if(isReelingPhase) {
+                    isMouseHeld = false;
+                    $(".fishing .rod .reel .handle").removeClass("reelin").addClass("reelout");
+                }
+            });
+
+            // Toastr settings
+            toastr.options = {
+                "positionClass": "toast-bottom-center",
+                "timeOut": "3000",
             }
         });
-    };
-})(jQuery, window, document);
 
-/* Minigame Logic */
-(function ($) {
-    var fishmovement, progresstimer, bottomtimer, baittimer, progressupdated = false;
-
-    $(".fishing .sea .fish").hide();
-    $(".fishing .sea .fish").animate(
-        { top: randomNumber($(".fishing .sea .fish").data("depth") * 0.89, 89) + "%" },
-        $(".fishing .sea .fish").data("speed"),
-        function () {
-            $(".fishing .sea .fish").fadeIn();
-            movefishy();
+        // --- PHASE 2: CASTING & WAITING ---
+        function startCast() {
+            if(isGameActive) return;
+            isGameActive = true;
+            
+            $("#castBtn").prop("disabled", true).text("Waiting...");
+            $("#statusText").text("Fishing line cast... waiting for a bite.");
+            
+            // Random time between 2 and 5 seconds
+            var waitTime = Math.floor(Math.random() * 3000) + 2000;
+            
+            setTimeout(function() {
+                if(isGameActive) triggerBite();
+            }, waitTime);
         }
-    );
 
-    $("body").pressAndHold({
-        holdTime: -1,
-        progressIndicatorRemoveDelay: 100
-    });
-
-    $("body").on("start.pressAndHold", function (event) {
-        clearInterval(bottomtimer);
-        clearInterval(baittimer);
-        $(".fishing .rod .reel .handle").removeClass("reelout").addClass("reelin");
-        setTimeout(function () {
-            $(".fishing .rod .reel .handle").removeClass("reelin");
-        }, 200);
-        $("#bait").stop(true);
-        var reelFunc = function () {
-            $(".fishing .rod .reel .handle").removeClass("reelout").addClass("reelin");
-            $("#bait").animate(
-                { top: "-=" + $(".fishing").data("reelpower") + "%" },
-                {
-                    duration: 400,
-                    easing: "linear",
-                    step: function (now) {
-                        if (now <= 0) $("#bait").stop(true);
-                        checkoverlapping();
-                    }
+        function triggerBite() {
+            // Show exclamation mark
+            $("#exclamation").show();
+            $("#statusText").text("FISH BITING! CLICK THE '!'");
+            
+            // If user doesn't click in 1.5 seconds, they lose the fish
+            setTimeout(function() {
+                if(!isReelingPhase && isGameActive) {
+                    resetGame("You missed the bite!");
                 }
-            );
-        };
-        baittimer = setInterval(reelFunc, 100);
-        reelFunc(); // call immediately to add buoyancy
-    });
-
-    $("body").on("end.pressAndHold", function (event) {
-        $(".fishing .rod .reel .handle").removeClass("reelin");
-        $("#bait").stop(true);
-        clearInterval(bottomtimer);
-        clearInterval(baittimer);
-        reelgravity();
-    });
-
-    reelgravity();
-
-    function reelgravity() {
-        $(".fishing .rod .reel .handle").addClass("reelout");
-        $("#bait").animate(
-            { top: "79%" },
-            {
-                duration: parseInt($(".fishing").data("baitweight")) * 1000,
-                complete: function () {
-                    $(".fishing .rod .reel .handle").removeClass("reelout");
-                },
-                step: function (now) {
-                    checkoverlapping();
-                }
-            }
-        ).animate({ top: "76%" }, 300, function () {
-            if (!progressupdated) {
-                bottomtimer = setInterval(function () {
-                    progressupdated = true;
-                    var baitbound = $("#bait")[0].getBoundingClientRect(),
-                        fishbound = $(".fishing .sea .fish")[0].getBoundingClientRect(),
-                        overlaping = !(
-                            baitbound.right < fishbound.left ||
-                            baitbound.left > fishbound.right ||
-                            baitbound.bottom < fishbound.top ||
-                            baitbound.top > fishbound.bottom
-                        );
-                    progressbar(overlaping);
-                }, $(".fishing").data("progressupdaterate"));
-            }
-        }).animate({ top: "79%" }, 300)
-          .animate({ top: "77%" }, 300)
-          .animate({ top: "79%" }, 500);
-    }
-
-    function checkoverlapping() {
-        var baitbound = $("#bait")[0].getBoundingClientRect(),
-            fishbound = $(".fishing .sea .fish")[0].getBoundingClientRect(),
-            overlaping = !(
-                baitbound.right < fishbound.left ||
-                baitbound.left > fishbound.right ||
-                baitbound.bottom < fishbound.top ||
-                baitbound.top > fishbound.bottom
-            );
-        if (!progressupdated) {
-            progressupdated = true;
-            progresstimer = setTimeout(function () {
-                progressbar(overlaping);
-            }, $(".fishing").data("progressupdaterate"));
+            }, 1500);
         }
-    }
 
-    function movefishy() {
-        fishmovement = setInterval(function () {
-            var currentposition = parseInt($(".fishing .sea .fish")[0].style.top || 0),
-                movedirection = Math.floor(Math.random() * currentposition) +
-                                Math.abs(currentposition - $(".fishing .sea .fish").data("jumprange"));
-            $(".fishing .sea .fish").animate(
-                { top: (movedirection <= 89 ? movedirection : 89) + "%" },
-                {
-                    duration: $(".fishing .sea .fish").data("speed"),
-                    step: function (now) {
-                        if (now <= 0) $(".fishing .sea .fish").stop(true);
-                    }
-                }
-            );
-        }, $(".fishing .sea .fish").data("movepremsec"));
-    }
+        // --- PHASE 3: THE REELING MINIGAME ---
+        function startMinigame() {
+            if(!isGameActive || isReelingPhase) return;
+            
+            isReelingPhase = true;
+            $("#exclamation").hide();
+            $("#minigameLayer").fadeIn(); 
+            $("#statusText").text("Hold Left Click to Reel Up!");
+            
+            // Initialize Physics State
+            baitPos = 85;
+            baitVelocity = 0;
+            fishPos = 80;
+            fishTarget = 20;
+            progress = 10; // Start with a little progress
+            
+            // Start the physics loop
+            gameLoop();
+        }
 
-    function progressbar(overlapping) {
-        clearTimeout(progresstimer);
-        var progressbarheight = parseFloat($(".fishing .progress .bar")[0].style.height || 0);
-        if (overlapping) {
-            if (progressbarheight < 100) {
-                $(".fishing .progress .bar").animate(
-                    { height: progressbarheight + $(".fishing").data("progress") + "%" },
-                    $(".fishing").data("progressupdaterate"),
-                    "linear"
-                );
+        // --- MAIN GAME LOOP (60 FPS) ---
+        function gameLoop() {
+            if (!isReelingPhase) return;
+
+            // 1. UPDATE BAIT POSITION
+            if (isMouseHeld) {
+                baitVelocity -= config.reelAccel;
+                if (baitVelocity < -config.maxReelSpeed) baitVelocity = -config.maxReelSpeed;
             } else {
-                toastr.success("You caught the fish. Good job!!", "Hooray!!");
-                reset();
+                baitVelocity += config.gravityAccel;
+                if (baitVelocity > config.maxFallSpeed) baitVelocity = config.maxFallSpeed;
             }
-        } else {
-            if (progressbarheight > 0) {
-                $(".fishing .progress .bar").animate(
-                    { height: progressbarheight - $(".fishing").data("progresspenalty") + "%" },
-                    $(".fishing").data("progressupdaterate"),
-                    "linear"
-                );
+            baitPos += baitVelocity;
+
+            // Clamp bait (keep inside the bar)
+            // 0 is top, 87 is bottom roughly (accounting for height of bait bar)
+            if (baitPos < 0) baitPos = 0;
+            if (baitPos > 85) baitPos = 85;
+
+            // 2. UPDATE FISH AI
+            // Randomly change target occasionally
+            if (Math.random() * 100 < 2) { 
+                fishTarget = Math.random() * 85;
             }
+
+            // Move fish towards target
+            if (fishPos < fishTarget) fishPos += (Math.random() * config.fishSpeed);
+            if (fishPos > fishTarget) fishPos -= (Math.random() * config.fishSpeed);
+            
+            // Clamp Fish
+            if (fishPos < 0) fishPos = 0;
+            if (fishPos > 90) fishPos = 90;
+
+            // 3. COLLISION DETECTION & PROGRESS
+            // Bait is 100px height (approx 20% of 500px area) - simplified math:
+            // Let's assume bait covers a range. Fish is smaller.
+            // Simplified: If fish is within distance of bait
+            var dist = Math.abs(baitPos - fishPos);
+            var isCatching = dist < 15; // 15% tolerance
+
+            if (isCatching) {
+                progress += config.progressWin;
+                $("#bait").css("background-color", "#84e362"); // Green tint
+            } else {
+                progress -= config.progressLose;
+                $("#bait").css("background-color", "#beee62"); // Normal tint
+            }
+
+            // Clamp Progress
+            if (progress < 0) progress = 0;
+            if (progress > 100) {
+                progress = 100;
+                gameWin();
+                return; // Exit loop
+            }
+
+            // Check Loss Condition
+            if (progress <= 0 && isGameActive && isReelingPhase) {
+                // optional: instant fail if bar hits bottom? 
+                // For now, we just stay at 0 until they catch up or give up.
+            }
+
+            // 4. RENDER TO DOM
+            $("#bait").css("top", baitPos + "%");
+            $(".fishing .sea .fish").css("top", fishPos + "%");
+            $(".fishing .progress .bar").css("height", progress + "%");
+
+            // Loop
+            gameLoopReq = requestAnimationFrame(gameLoop);
         }
-        progressupdated = false;
-    }
 
-    function reset() {
-        clearInterval(bottomtimer);
-        clearInterval(fishmovement);
-        clearInterval(baittimer);
-        $(".fishing .sea .fish").hide();
-        $(".fishing .sea .fish").animate(
-            { top: randomNumber($(".fishing .sea .fish").data("depth") * 0.89, 89) + "%" },
-            $(".fishing .sea .fish").data("speed"),
-            function () {
-                $(".fishing .sea .fish").fadeIn();
-                movefishy();
-            }
-        );
-        $(".fishing .progress .bar").css("height", "0%");
-    }
+        // --- END GAME STATES ---
+        function gameWin() {
+            toastr.success("You caught the fish!", "SUCCESS");
+            resetGame("Fish Caught! Cast again?");
+        }
 
-    function randomNumber(min, max) {
-        return Math.random() * (max - min) + min;
-    }
-})(jQuery);
-</script>
+        function resetGame(msg) {
+            cancelAnimationFrame(gameLoopReq);
+            isGameActive = false;
+            isReelingPhase = false;
+            isMouseHeld = false;
+            
+            // Reset Visuals
+            $(".fishing .sea .fish").hide();
+            $(".fishing .progress .bar").css("height", "0%");
+            $(".fishing .rod .reel .handle").removeClass("reelin reelout");
+            
+            $("#minigameLayer").fadeOut();
+            $("#exclamation").hide();
+            
+            $("#castBtn").prop("disabled", false).text("Cast Line");
+            $("#statusText").text(msg || "");
+        }
 
+    })(jQuery);
+    </script>
 </body>
 </html>
