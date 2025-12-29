@@ -777,11 +777,20 @@
             score = 0;
             caughtFish = 0;
             gameOver = false;
+            isGameActive = false;
+            isReelingPhase = false;
+            isMouseHeld = false;
             updateScoreDisplay();
             updateFishPond();
-            $("#castBtn").show();
+            $("#castBtn").show().prop("disabled", false).text("Cast Line");
             $("#restartBtn").hide();
             $("#statusText").text("Welcome to the Night Market!");
+            // Reset any visual states
+            $(".fishing .sea .fish").hide();
+            $(".fishing .progress .bar").css("height", "0%");
+            $(".fishing .rod .reel .handle").removeClass("reelin reelout");
+            $("#minigameLayer").fadeOut();
+            $("#exclamation").hide();
         }
 
         function updateFishPond() {
