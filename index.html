@@ -184,7 +184,7 @@
             maxReelSpeed: 0.6,  // Max speed reeling up
             maxFallSpeed: 0.6,  // Max speed falling
             progressWin: 0.2,   // How fast bar fills
-            progressLose: 0.05, // How fast bar drains
+            progressLose: 0.1, // How fast bar drains
             fishSpeed: 0.3,     // Base fish speed multiplier
             fishChangeRate: 50  // How erratic the fish is
         };
@@ -275,6 +275,9 @@
             fishTarget = 20;
             progress = 10; // Start with a little progress
             
+            // Show the fish
+            $(".fishing .sea .fish").show();
+            
             // Start the physics loop
             gameLoop();
         }
@@ -337,8 +340,8 @@
 
             // Check Loss Condition
             if (progress <= 0 && isGameActive && isReelingPhase) {
-                // optional: instant fail if bar hits bottom? 
-                // For now, we just stay at 0 until they catch up or give up.
+                gameLose();
+                return; // Exit loop
             }
 
             // 4. RENDER TO DOM
@@ -354,6 +357,11 @@
         function gameWin() {
             toastr.success("You caught the fish!", "SUCCESS");
             resetGame("Fish Caught! Cast again?");
+        }
+
+        function gameLose() {
+            toastr.error("The fish got away!", "FAILED");
+            resetGame("Fish escaped! Cast again?");
         }
 
         function resetGame(msg) {
