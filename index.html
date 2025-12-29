@@ -175,6 +175,17 @@
             font-weight: bold;
         }
 
+        .score-display {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #FFD700;
+            text-shadow: 2px 2px #000;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
         .pond-fish {
             position: absolute;
             bottom: 10px;
@@ -190,11 +201,82 @@
             margin-right: 10px;
         }
 
+        .swim-pond-1 { animation: swim-pond 4s ease-in-out infinite; }
+        .swim-pond-2 { animation: swim-pond-2 4.2s ease-in-out infinite; }
+        .swim-pond-3 { animation: swim-pond-3 3.8s ease-in-out infinite; }
+        .swim-pond-4 { animation: swim-pond-4 4.5s ease-in-out infinite; }
+        .swim-pond-5 { animation: swim-pond-5 3.6s ease-in-out infinite; }
+        .swim-pond-6 { animation: swim-pond-6 4.8s ease-in-out infinite; }
+        .swim-pond-7 { animation: swim-pond-7 3.9s ease-in-out infinite; }
+        .swim-pond-8 { animation: swim-pond-8 4.3s ease-in-out infinite; }
+        .swim-pond-9 { animation: swim-pond-9 4.1s ease-in-out infinite; }
+
         @keyframes swim-pond {
             0%, 100% { transform: translateX(0px) translateY(0px) rotateY(0deg); }
             25% { transform: translateX(100px) translateY(-20px) rotateY(0deg); }
             50% { transform: translateX(200px) translateY(0px) rotateY(180deg); }
             75% { transform: translateX(100px) translateY(20px) rotateY(180deg); }
+        }
+
+        @keyframes swim-pond-2 {
+            0%, 100% { transform: translateX(0px) translateY(0px) rotateY(0deg) scale(0.9); }
+            20% { transform: translateX(80px) translateY(-15px) rotateY(0deg) scale(1.0); }
+            40% { transform: translateX(160px) translateY(-5px) rotateY(180deg) scale(0.95); }
+            60% { transform: translateX(120px) translateY(15px) rotateY(180deg) scale(1.05); }
+            80% { transform: translateX(40px) translateY(10px) rotateY(0deg) scale(0.9); }
+        }
+
+        @keyframes swim-pond-3 {
+            0%, 100% { transform: translateX(0px) translateY(0px) rotateY(0deg); }
+            30% { transform: translateX(120px) translateY(-25px) rotateY(0deg); }
+            60% { transform: translateX(180px) translateY(10px) rotateY(180deg); }
+            90% { transform: translateX(60px) translateY(-10px) rotateY(180deg); }
+        }
+
+        @keyframes swim-pond-4 {
+            0%, 100% { transform: translateX(0px) translateY(0px) rotateY(0deg) scale(1.1); }
+            15% { transform: translateX(60px) translateY(-10px) rotateY(0deg) scale(1.0); }
+            35% { transform: translateX(140px) translateY(5px) rotateY(180deg) scale(1.2); }
+            55% { transform: translateX(200px) translateY(-15px) rotateY(180deg) scale(0.9); }
+            75% { transform: translateX(140px) translateY(20px) rotateY(0deg) scale(1.1); }
+            90% { transform: translateX(40px) translateY(-5px) rotateY(0deg) scale(1.0); }
+        }
+
+        @keyframes swim-pond-5 {
+            0%, 100% { transform: translateX(0px) translateY(0px) rotateY(0deg); }
+            25% { transform: translateX(90px) translateY(-30px) rotateY(0deg); }
+            50% { transform: translateX(180px) translateY(15px) rotateY(180deg); }
+            75% { transform: translateX(90px) translateY(-10px) rotateY(180deg); }
+        }
+
+        @keyframes swim-pond-6 {
+            0%, 100% { transform: translateX(0px) translateY(0px) rotateY(0deg) scale(0.8); }
+            20% { transform: translateX(70px) translateY(-20px) rotateY(0deg) scale(0.9); }
+            40% { transform: translateX(150px) translateY(-10px) rotateY(180deg) scale(1.0); }
+            60% { transform: translateX(110px) translateY(25px) rotateY(180deg) scale(0.85); }
+            80% { transform: translateX(30px) translateY(5px) rotateY(0deg) scale(0.95); }
+        }
+
+        @keyframes swim-pond-7 {
+            0%, 100% { transform: translateX(0px) translateY(0px) rotateY(0deg); }
+            35% { transform: translateX(110px) translateY(-18px) rotateY(0deg); }
+            70% { transform: translateX(190px) translateY(8px) rotateY(180deg); }
+        }
+
+        @keyframes swim-pond-8 {
+            0%, 100% { transform: translateX(0px) translateY(0px) rotateY(0deg) scale(1.15); }
+            10% { transform: translateX(50px) translateY(-12px) rotateY(0deg) scale(1.05); }
+            30% { transform: translateX(130px) translateY(8px) rotateY(180deg) scale(1.25); }
+            50% { transform: translateX(190px) translateY(-20px) rotateY(180deg) scale(0.95); }
+            70% { transform: translateX(130px) translateY(18px) rotateY(0deg) scale(1.1); }
+            85% { transform: translateX(50px) translateY(-8px) rotateY(0deg) scale(1.0); }
+        }
+
+        @keyframes swim-pond-9 {
+            0%, 100% { transform: translateX(0px) translateY(0px) rotateY(0deg); }
+            28% { transform: translateX(95px) translateY(-22px) rotateY(0deg); }
+            56% { transform: translateX(175px) translateY(12px) rotateY(180deg); }
+            84% { transform: translateX(75px) translateY(-8px) rotateY(180deg); }
         }        .flash-overlay {
             position: fixed;
             top: 0; left: 0;
@@ -339,15 +421,21 @@
     <div class="lantern"></div>
     <div class="lantern"></div>
     <div class="lantern"></div>
+    <div class="lantern" style="top: 10%; left: 70%; animation-delay: 0.5s;"></div>
+    <div class="lantern" style="top: 25%; left: 85%; animation-delay: 1.0s; background: #ff6b6b; box-shadow: 0 5px 30px rgba(255, 107, 107, 0.8);"></div>
+    <div class="lantern" style="top: 35%; left: 5%; animation-delay: 1.5s;"></div>
+    <div class="lantern" style="top: 45%; left: 90%; animation-delay: 2.0s; background: #ff6b6b; box-shadow: 0 5px 30px rgba(255, 107, 107, 0.8);"></div>
     <div class="crowd"></div>
 
     <div class="game-scene">
+        <div class="score-display" id="scoreDisplay">Score: 0</div>
         <div class="cat-avatar">
             <i class="fas fa-cat"></i> <div class="notification-exclamation" id="exclamation">!</div>
         </div>
         
         <div class="controls">
             <button id="castBtn" class="action-btn">Cast Line</button>
+            <button id="restartBtn" class="action-btn" style="display: none;">Restart Game</button>
         </div>
         
         <div class="fish-pond" id="fishPond">
@@ -396,22 +484,84 @@
     <script>
     /* --- GAME LOGIC --- */
     (function ($) {
+        // --- AUDIO SYSTEM ---
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(frequency, duration, type = 'sine', volume = 0.3) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            oscillator.type = type;
+            
+            gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        function playCastSound() {
+            // Swish sound for casting
+            playSound(200, 0.3, 'sawtooth', 0.2);
+            setTimeout(() => playSound(150, 0.2, 'sawtooth', 0.15), 100);
+        }
+
+        function playBiteSound() {
+            // Alert/notification sound
+            playSound(800, 0.1, 'square', 0.3);
+            setTimeout(() => playSound(1000, 0.1, 'square', 0.3), 150);
+            setTimeout(() => playSound(1200, 0.1, 'square', 0.3), 300);
+        }
+
+        function playReelSound() {
+            // Continuous reeling sound
+            playSound(300, 0.05, 'sawtooth', 0.1);
+        }
+
+        function playSuccessSound() {
+            // Success chime
+            playSound(523, 0.2, 'sine', 0.3); // C
+            setTimeout(() => playSound(659, 0.2, 'sine', 0.3), 150); // E
+            setTimeout(() => playSound(784, 0.2, 'sine', 0.3), 300); // G
+        }
+
+        function playFailSound() {
+            // Fail sound
+            playSound(200, 0.3, 'sawtooth', 0.4);
+            setTimeout(() => playSound(150, 0.3, 'sawtooth', 0.4), 200);
+        }
+
+        function playGameOverSound() {
+            // Game over sound
+            playSound(100, 0.5, 'sawtooth', 0.5);
+            setTimeout(() => playSound(80, 0.5, 'sawtooth', 0.5), 300);
+        }
         // --- CONFIGURATION ---
+        const difficulties = [
+            { name: "Easy", fishSpeed: 0.20, fishChangeRate: 40, progressLose: 0.10, scoreMultiplier: 1 },
+            { name: "Medium", fishSpeed: 0.30, fishChangeRate: 65, progressLose: 0.14, scoreMultiplier: 2 },
+            { name: "Hard", fishSpeed: 0.42, fishChangeRate: 85, progressLose: 0.18, scoreMultiplier: 3 },
+            { name: "Expert", fishSpeed: 0.55, fishChangeRate: 110, progressLose: 0.22, scoreMultiplier: 4 }
+        ];
+
         const config = {
             reelAccel: 0.05,    // Acceleration when reeling up
             gravityAccel: 0.03, // Acceleration when falling
             maxReelSpeed: 0.6,  // Max speed reeling up
             maxFallSpeed: 0.6,  // Max speed falling
             progressWin: 0.1,   // How fast bar fills
-            progressLose: 0.17, // How fast bar drains
-            fishSpeed: 0.3,     // Base fish speed multiplier
-            fishChangeRate: 80  // How erratic the fish is
+            // difficulty-specific values will be set dynamically
         };
 
         // --- STATE VARIABLES ---
         var isGameActive = false;
         var isReelingPhase = false;
         var isMouseHeld = false;
+        var gameOver = false;
         
         // Physics variables (using 0-100 scale for %)
         var baitPos = 85; 
@@ -420,18 +570,22 @@
         var fishTarget = 85;
         var progress = 0;
         var caughtFish = 0;
+        var score = 0;
+        var currentDifficulty = null;
         var gameLoopReq; // Request Animation Frame ID
 
         // --- PHASE 1: INITIALIZATION ---
         $(document).ready(function() {
             // Setup Listeners
             $("#castBtn").click(startCast);
+            $("#restartBtn").click(restartGame);
             $("#exclamation").click(startMinigame);
             
             // Mouse/Touch controls for the minigame
             $(document).on('mousedown touchstart', function(e) {
                 if(isReelingPhase) {
                     isMouseHeld = true;
+                    playReelSound(); // Play reel sound
                     $(".fishing .rod .reel .handle").addClass("reelin").removeClass("reelout");
                 }
             });
@@ -448,13 +602,24 @@
                 "positionClass": "toast-bottom-center",
                 "timeOut": "3000",
             }
+            // Play welcome sound
+            setTimeout(() => playSound(440, 0.3, 'sine', 0.2), 500); // A note
+            updateScoreDisplay();
             updateFishPond();
         });
 
         // --- PHASE 2: CASTING & WAITING ---
         function startCast() {
-            if(isGameActive) return;
+            if(isGameActive || gameOver) return;
             isGameActive = true;
+            
+            playCastSound(); // Play cast sound
+            
+            // Select random difficulty
+            currentDifficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
+            config.fishSpeed = currentDifficulty.fishSpeed;
+            config.fishChangeRate = currentDifficulty.fishChangeRate;
+            config.progressLose = currentDifficulty.progressLose;
             
             $("#castBtn").prop("disabled", true).text("Waiting...");
             $("#statusText").text("Fishing line cast... waiting for a bite.");
@@ -468,6 +633,7 @@
         }
 
         function triggerBite() {
+            playBiteSound(); // Play bite alert sound
             // Show exclamation mark
             $("#exclamation").show();
             $("#statusText").text("FISH BITING! CLICK THE '!'");
@@ -494,7 +660,7 @@
             baitVelocity = 0;
             fishPos = 80;
             fishTarget = 20;
-            progress = 10; // Start with a little progress
+            progress = 20; // Start with more progress
             
             // Show the fish
             $(".fishing .sea .fish").show();
@@ -524,13 +690,17 @@
 
             // 2. UPDATE FISH AI
             // Randomly change target occasionally
-            if (Math.random() * 100 < 2) { 
+            if (Math.random() * 100 < config.fishChangeRate) { 
                 fishTarget = Math.random() * 85;
             }
 
-            // Move fish towards target
-            if (fishPos < fishTarget) fishPos += (Math.random() * config.fishSpeed);
-            if (fishPos > fishTarget) fishPos -= (Math.random() * config.fishSpeed);
+            // Move fish towards target with consistent speed
+            var moveAmount = config.fishSpeed + (Math.random() * 0.1 - 0.05); // Small random variation
+            if (fishPos < fishTarget) {
+                fishPos += moveAmount;
+            } else if (fishPos > fishTarget) {
+                fishPos -= moveAmount;
+            }
             
             // Clamp Fish
             if (fishPos < 0) fishPos = 0;
@@ -541,7 +711,7 @@
             // Let's assume bait covers a range. Fish is smaller.
             // Simplified: If fish is within distance of bait
             var dist = Math.abs(baitPos - fishPos);
-            var isCatching = dist < 15; // 15% tolerance
+            var isCatching = dist < 18; // 18% tolerance - slightly easier
 
             if (isCatching) {
                 progress += config.progressWin;
@@ -577,23 +747,49 @@
         // --- END GAME STATES ---
         function gameWin() {
             caughtFish++;
+            // Score increases based on difficulty multiplier
+            score += 10 * currentDifficulty.scoreMultiplier;
+            updateScoreDisplay();
             updateFishPond();
+            playSuccessSound(); // Play success sound
             $(".flash-overlay").css("background", "rgba(0,255,0,0.3)").show().fadeOut(200);
-            toastr.success("You caught the fish!", "SUCCESS");
+            toastr.success("You caught a " + currentDifficulty.name + " fish! +" + (10 * currentDifficulty.scoreMultiplier) + " points", "SUCCESS");
             setTimeout(() => resetGame("Fish Caught! Cast again?"), 1000);
         }
 
         function gameLose() {
+            playFailSound(); // Play fail sound
+            gameOver = true;
             $(".flash-overlay").css("background", "rgba(255,0,0,0.3)").show().fadeOut(200);
-            toastr.error("The fish got away!", "FAILED");
-            setTimeout(() => resetGame("Fish escaped! Cast again?"), 1000);
+            toastr.error("The fish got away! Game Over!", "FAILED");
+            $("#castBtn").hide();
+            $("#restartBtn").show();
+            $("#statusText").text("Game Over! Final Score: " + score + " | Fish Caught: " + caughtFish);
+            resetGame("");
+        }
+
+        function updateScoreDisplay() {
+            $("#scoreDisplay").text("Score: " + score);
+        }
+
+        function restartGame() {
+            playGameOverSound(); // Play game over sound
+            score = 0;
+            caughtFish = 0;
+            gameOver = false;
+            updateScoreDisplay();
+            updateFishPond();
+            $("#castBtn").show();
+            $("#restartBtn").hide();
+            $("#statusText").text("Welcome to the Night Market!");
         }
 
         function updateFishPond() {
             var fishHtml = '';
             for (var i = 0; i < caughtFish; i++) {
                 var delay = (i % 4) * 1; // stagger delays
-                fishHtml += '<i class="fas fa-fish swimming-fish" style="animation-delay: ' + delay + 's"></i>';
+                var animationClass = 'swim-pond-' + ((i % 9) + 1); // Cycle through 9 different animations
+                fishHtml += '<i class="fas fa-fish swimming-fish ' + animationClass + '" style="animation-delay: ' + delay + 's"></i>';
             }
             $("#pondFish").html(fishHtml);
         }
@@ -612,8 +808,10 @@
             $("#minigameLayer").fadeOut();
             $("#exclamation").hide();
             
-            $("#castBtn").prop("disabled", false).text("Cast Line");
-            $("#statusText").text(msg || "");
+            if (!gameOver) {
+                $("#castBtn").prop("disabled", false).text("Cast Line");
+                $("#statusText").text(msg || "");
+            }
         }
 
     })(jQuery);
