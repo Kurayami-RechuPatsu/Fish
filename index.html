@@ -203,13 +203,13 @@
 
         .swim-pond-1 { animation: swim-pond 4s ease-in-out infinite; }
         .swim-pond-2 { animation: swim-pond-2 4.2s ease-in-out infinite; }
-        .swim-pond-3 { animation: swim-pond-3 3.8s ease-in-out infinite; }
-        .swim-pond-4 { animation: swim-pond-4 4.5s ease-in-out infinite; }
+        .swim-pond-3 { animation: swim-pond-3 2.8s ease-in-out infinite; }
+        .swim-pond-4 { animation: swim-pond-4 8.5s ease-in-out infinite; }
         .swim-pond-5 { animation: swim-pond-5 3.6s ease-in-out infinite; }
-        .swim-pond-6 { animation: swim-pond-6 4.8s ease-in-out infinite; }
+        .swim-pond-6 { animation: swim-pond-6 5.8s ease-in-out infinite; }
         .swim-pond-7 { animation: swim-pond-7 3.9s ease-in-out infinite; }
-        .swim-pond-8 { animation: swim-pond-8 4.3s ease-in-out infinite; }
-        .swim-pond-9 { animation: swim-pond-9 4.1s ease-in-out infinite; }
+        .swim-pond-8 { animation: swim-pond-8 9.3s ease-in-out infinite; }
+        .swim-pond-9 { animation: swim-pond-9 7.1s ease-in-out infinite; }
 
         @keyframes swim-pond {
             0%, 100% { transform: translateX(0px) translateY(0px) rotateY(0deg); }
@@ -409,11 +409,53 @@
         .fishing .progress { position: absolute; width: 25px; height: 100%; border: 3px solid #34495e; background: #e74c3c; right: -35px; top: 0; border-radius: 10px; padding: 3px; box-sizing: border-box; }
         .fishing .progress .area { position: relative; width: 100%; height: 100%; background: #c0392b; border-radius: 5px; overflow: hidden; }
         .fishing .progress .bar { position: absolute; width: 100%; height: 0%; background: linear-gradient(to top, #2ecc71, #f1c40f); bottom: 0; border-radius: 0 0 5px 5px; box-shadow: 0 0 10px #f1c40f; transition: height 0.1s linear;}
+
+        /* --- LEADERBOARD STYLES --- */
+        .leaderboard-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            border: 3px solid #f39c12;
+            padding: 12px;
+            border-radius: 8px;
+            z-index: 200;
+            font-size: 13px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+        }
+
+        .leaderboard-panel h3 { margin: 0 0 8px 0; font-size: 14px; color: #FFD700; }
+        .leaderboard-list { max-height: 220px; overflow-y: auto; margin-bottom: 8px; }
+        .leaderboard-list ol { margin: 0; padding: 0 0 0 18px; }
+        .leaderboard-list li { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dashed rgba(255,255,255,0.04); }
+        .leaderboard-list .name { color: #fff; }
+        .leaderboard-list .score { color: #f39c12; font-weight: bold; }
+
+        .leaderboard-controls { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+        .leaderboard-controls input[type="text"], .leaderboard-controls input[type="number"] { padding:6px; border-radius:6px; border:2px solid rgba(255,255,255,0.06); background: rgba(0,0,0,0.4); color: #fff; }
+        .leaderboard-controls button.action-btn { padding:8px 10px; font-size:12px; box-shadow: 0 4px 0 #c78200; }
     </style>
 </head>
 <body>
 
     <div class="background-image-placeholder"></div>
+
+    <!-- Leaderboard panel -->
+    <div id="leaderboardPanel" class="leaderboard-panel" aria-live="polite">
+        <h3>Leaderboard</h3>
+        <div id="leaderboardList" class="leaderboard-list">Loading...</div>
+        <div class="leaderboard-controls">
+            <input id="playerName" type="text" placeholder="Name" maxlength="20" />
+            <input id="playerScore" type="number" placeholder="Score" style="width:80px" />
+            <button id="submitScore" class="action-btn">Submit</button>
+            <button id="exportLb" class="action-btn">Export</button>
+            <button id="importLb" class="action-btn">Import</button>
+            <button id="clearLb" class="action-btn">Clear</button>
+            <input type="file" id="importFile" accept="application/json" style="display:none" />
+        </div>
+    </div>
     
     <div class="string-lights"></div>
     <div class="crowd back"></div>
@@ -542,18 +584,18 @@
         }
         // --- CONFIGURATION ---
         const difficulties = [
-            { name: "Easy", fishSpeed: 0.20, fishChangeRate: 40, progressLose: 0.10, scoreMultiplier: 1 },
-            { name: "Medium", fishSpeed: 0.30, fishChangeRate: 65, progressLose: 0.14, scoreMultiplier: 2 },
-            { name: "Hard", fishSpeed: 0.42, fishChangeRate: 85, progressLose: 0.18, scoreMultiplier: 3 },
-            { name: "Expert", fishSpeed: 0.55, fishChangeRate: 110, progressLose: 0.22, scoreMultiplier: 4 }
+            { name: "Easy", fishSpeed: 0.27, fishChangeRate: 40, progressLose: 0.10, scoreMultiplier: 1 },
+            { name: "Medium", fishSpeed: 0.46, fishChangeRate: 65, progressLose: 0.14, scoreMultiplier: 2 },
+            { name: "Hard", fishSpeed: 0.82, fishChangeRate: 85, progressLose: 0.18, scoreMultiplier: 3 },
+            { name: "Expert", fishSpeed: 0.85, fishChangeRate: 110, progressLose: 0.22, scoreMultiplier: 4 }
         ];
 
         const config = {
-            reelAccel: 0.05,    // Acceleration when reeling up
-            gravityAccel: 0.03, // Acceleration when falling
+            reelAccel: 0.06,    // Acceleration when reeling up
+            gravityAccel: 0.06, // Acceleration when falling
             maxReelSpeed: 0.6,  // Max speed reeling up
             maxFallSpeed: 0.6,  // Max speed falling
-            progressWin: 0.1,   // How fast bar fills
+            progressWin: 0.19,   // How fast bar fills
             // difficulty-specific values will be set dynamically
         };
 
@@ -823,7 +865,11 @@
             }
         }
 
-    })(jQuery);
+            // Expose current score for the leaderboard (safe accessor)
+            window.getFishScore = function() { return typeof score !== 'undefined' ? score : 0; };
+
+        })(jQuery);
     </script>
+        <script src="leaderboard.js"></script>
 </body>
 </html>
