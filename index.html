@@ -182,6 +182,19 @@
             font-size: 24px;
             color: #f1c40f;
             text-shadow: 1px 1px #c0392b;
+        }
+
+        .swimming-fish {
+            display: inline-block;
+            animation: swim-pond 4s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes swim-pond {
+            0%, 100% { transform: translateX(0px) translateY(0px) rotateY(0deg); }
+            25% { transform: translateX(100px) translateY(-20px) rotateY(0deg); }
+            50% { transform: translateX(200px) translateY(0px) rotateY(180deg); }
+            75% { transform: translateX(100px) translateY(20px) rotateY(180deg); }
         }        .flash-overlay {
             position: fixed;
             top: 0; left: 0;
@@ -579,7 +592,8 @@
         function updateFishPond() {
             var fishHtml = '';
             for (var i = 0; i < caughtFish; i++) {
-                fishHtml += '<i class="fas fa-fish"></i> ';
+                var delay = (i % 4) * 1; // stagger delays
+                fishHtml += '<i class="fas fa-fish swimming-fish" style="animation-delay: ' + delay + 's"></i>';
             }
             $("#pondFish").html(fishHtml);
         }
