@@ -591,11 +591,14 @@
         ];
 
         const config = {
-            reelAccel: 0.06,    // Acceleration when reeling up
-            gravityAccel: 0.06, // Acceleration when falling
-            maxReelSpeed: 0.6,  // Max speed reeling up
-            maxFallSpeed: 0.6,  // Max speed falling
-            progressWin: 0.19,   // How fast bar fills
+            reelAccel: 0.8,    // Acceleration when reeling up
+            gravityAccel: 0.8, // Acceleration when falling
+            maxReelSpeed: 1.10,  // Max speed reeling up
+            maxFallSpeed: 1.10,  // Max speed falling
+            progressWin: 0.2,   // How fast bar fills
+            progressLose: 0.14, // How fast bar depletes
+            fishSpeed: 3.46,    // Base fish movement speed
+            fishChangeRate: 89, // How often fish changes target
             // difficulty-specific values will be set dynamically
         };
 
@@ -678,10 +681,26 @@
             playBiteSound(); // Play bite alert sound
             // Show exclamation mark
             $("#exclamation").show();
-            $("#statusText").text("FISH BITING! CLICK THE '!'");
-            
-            // If user doesn't click in 1.5 seconds, they lose the fish
-            setTimeout(function() {
+            $("#statusText").text("FISH BITING! CLICK ANYWHERE");
+
+            // Handler that will start the minigame when the player clicks/touches anywhere
+            function proceedToMinigame(e) {
+                try { e && e.preventDefault && e.preventDefault(); } catch (e) {}
+                // remove listeners and clear timeout
+                document.removeEventListener('click', proceedToMinigame);
+                document.removeEventListener('touchstart', proceedToMinigame);
+                clearTimeout(biteTimer);
+                if(!isReelingPhase && isGameActive) startMinigame();
+            }
+
+            // Add listeners for both click and touch
+            document.addEventListener('click', proceedToMinigame);
+            document.addEventListener('touchstart', proceedToMinigame);
+
+            // If user doesn't click/touch in 1.5 seconds, they lose the fish
+            var biteTimer = setTimeout(function() {
+                document.removeEventListener('click', proceedToMinigame);
+                document.removeEventListener('touchstart', proceedToMinigame);
                 if(!isReelingPhase && isGameActive) {
                     resetGame("You missed the bite!");
                 }
